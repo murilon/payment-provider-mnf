@@ -11,6 +11,7 @@ import { randomString, randomUrl } from './utils'
 
 type Flow =
   | 'Authorize'
+  | 'PaymentApp'
   | 'Denied'
   | 'Cancel'
   | 'AsyncApproved'
@@ -30,8 +31,9 @@ export const flows: Record<
       authorizationId: randomString(),
       nsu: randomString(),
       tid: randomString(),
+      
     }),
-
+  
   Denied: request => Authorizations.deny(request, { tid: randomString() }),
 
   Cancel: (request, retry) => flows.Authorize(request, retry),
@@ -44,6 +46,7 @@ export const flows: Record<
         tid: randomString(),
       })
     )
+    console.log("Async Approved") 
 
     return Authorizations.pending(request, {
       delayToCancel: 1000,
@@ -53,6 +56,7 @@ export const flows: Record<
 
   AsyncDenied: (request, retry) => {
     retry(Authorizations.deny(request, { tid: randomString() }))
+    console.log("Async Denied") 
 
     return Authorizations.pending(request, {
       delayToCancel: 1000,
@@ -68,6 +72,7 @@ export const flows: Record<
         tid: randomString(),
       })
     )
+    console.log("BankInvoice") 
 
     return Authorizations.pendingBankInvoice(request, {
       delayToCancel: 1000,
@@ -75,6 +80,31 @@ export const flows: Record<
       tid: randomString(),
     })
   },
+
+  PaymentApp: (request) => {
+    const {paymentId} = request;
+    console.log("PaymentApp") 
+    return{
+      paymentId,
+      status: 'undefined',
+      acquirer: null,
+      code: null,
+      message: null,
+      paymentAppData: {
+          appName: 'murilofaria.payment-auth-app-mnf',
+          payload: "teste"//JSON.stringify({ paymentId })
+      },
+      identificationNumber: undefined,
+      identificationNumberFormatted: undefined,
+      barCodeImageNumber: undefined,
+      barCodeImageType: undefined,
+      delayToCancel: 1000,
+      tid: randomString(),
+      //paymentUrl: randomUrl(),
+      authorizationId: randomString()
+    }
+  },
+  
 
   Redirect: (request, retry) => {
     retry(
@@ -84,10 +114,10 @@ export const flows: Record<
         tid: randomString(),
       })
     )
-
+    console.log("Redirect")  
     return Authorizations.redirect(request, {
       delayToCancel: 1000,
-      redirectUrl: randomUrl(),
+      redirectUrl: "https://www.lipsum.com/",
       tid: randomString(),
     })
   },
@@ -96,16 +126,18 @@ export const flows: Record<
 export type CardNumber =
   | '4444333322221111'
   | '4444333322221112'
+  | '4444333322221113'
   | '4222222222222224'
   | '4222222222222225'
   | 'null'
 
 const cardResponses: Record<CardNumber, Flow> = {
   '4444333322221111': 'Authorize',
-  '4444333322221112': 'Denied',
+  '4444333322221112': 'Redirect',
+  '4444333322221113': 'PaymentApp',
   '4222222222222224': 'AsyncApproved',
   '4222222222222225': 'AsyncDenied',
-  null: 'Redirect',
+  null: 'Denied',
 }
 
 const findFlow = (request: AuthorizationRequest): Flow => {
@@ -113,7 +145,10 @@ const findFlow = (request: AuthorizationRequest): Flow => {
 
   if (isCardAuthorization(request)) {
     const { card } = request
-    const cardNumber = isTokenizedCard(card) ? null : card.number
+    const cardNumber = isTokenizedCard(card) ? '4222222222222224' : card.number
+    console.log("Card Specs")
+    console.log(card)
+    console.log(cardNumber)
 
     return cardResponses[cardNumber as CardNumber]
   }

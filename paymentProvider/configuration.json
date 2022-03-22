@@ -1,5 +1,7 @@
 {
-  "name": "TestSuitApprover",
+  "name": "MuriloFariaPaymentProviderFramework",
+  "usesSecureProxy": false,
+  "usesBankInvoiceEnglishName": true,
   "paymentMethods": [
     {
       "name": "Visa",
@@ -28,6 +30,18 @@
     {
       "name": "BankInvoice",
       "allowsSplit": "onAuthorize"
+    },
+    {
+      "name": "Pix",
+      "allowsSplit": "onAuthorize"
+    },
+    {
+      "name": "Privatelabels",
+      "allowsSplit": "onCapture"
+    },
+    {
+      "name": "Cobranded",
+      "allowsSplit": "onCapture"
     }
   ]
 }

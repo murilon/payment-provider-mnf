@@ -4,6 +4,8 @@ import {
   CancellationRequest,
   CancellationResponse,
   Cancellations,
+  InboundRequest,
+  InboundResponse,
   PaymentProvider,
   RefundRequest,
   RefundResponse,
@@ -33,7 +35,7 @@ const getPersistedAuthorizationResponse = async (
     true
   )
 
-export default class TestSuiteApprover extends PaymentProvider {
+export default class MuriloFariaPaymentProviderFramework extends PaymentProvider {
   // This class needs modifications to pass the test suit.
   // Refer to https://help.vtex.com/en/tutorial/payment-provider-protocol#4-testing
   // in order to learn about the protocol and make the according changes.
@@ -42,6 +44,8 @@ export default class TestSuiteApprover extends PaymentProvider {
     req: AuthorizationRequest,
     resp: AuthorizationResponse
   ) {
+    console.log(req)
+    console.log(resp)
     await persistAuthorizationResponse(this.context.clients.vbase, resp)
     this.callback(req, resp)
   }
@@ -49,7 +53,8 @@ export default class TestSuiteApprover extends PaymentProvider {
   public async authorize(
     authorization: AuthorizationRequest
   ): Promise<AuthorizationResponse> {
-    if (this.isTestSuite) {
+    console.log(authorization)
+    //if (this.isTestSuite) {
       const persistedResponse = await getPersistedAuthorizationResponse(
         this.context.clients.vbase,
         authorization
@@ -62,40 +67,66 @@ export default class TestSuiteApprover extends PaymentProvider {
       return executeAuthorization(authorization, response =>
         this.saveAndRetry(authorization, response)
       )
-    }
+    //}
 
-    throw new Error('Not implemented')
+    //throw new Error('Not implemented')
   }
 
   public async cancel(
     cancellation: CancellationRequest
   ): Promise<CancellationResponse> {
-    if (this.isTestSuite) {
+    //if (this.isTestSuite) {
       return Cancellations.approve(cancellation, {
         cancellationId: randomString(),
       })
-    }
+    //}
 
-    throw new Error('Not implemented')
+    //throw new Error('Not implemented')
   }
 
   public async refund(refund: RefundRequest): Promise<RefundResponse> {
-    if (this.isTestSuite) {
-      return Refunds.deny(refund)
-    }
+    //if (this.isTestSuite) {
+      return Refunds.approve(refund, {
+        refundId: randomString()
+      })
+    //}
 
-    throw new Error('Not implemented')
+    //throw new Error('Not implemented')
   }
 
   public async settle(
     settlement: SettlementRequest
   ): Promise<SettlementResponse> {
-    if (this.isTestSuite) {
-      return Settlements.deny(settlement)
-    }
+    //if (this.isTestSuite) {
+      return Settlements.approve(settlement, {
+        settleId: randomString()
+      })
+    //}
 
-    throw new Error('Not implemented')
+    //throw new Error('Not implemented')
   }
 
-  public inbound: undefined
+  public inbound(inbound: InboundRequest): Promise<InboundResponse> {
+    const response = async () => {
+      return {
+        paymentId: inbound.paymentId,
+        code: '200',
+        message: 'Inbound Request Test',
+        responseData: {
+          statusCode: 200,
+          contentType: 'Application/JSON',
+          content: JSON.stringify({
+            ...JSON.parse(inbound.requestData.body),
+            appKey: this.apiKey,
+            appToken: this.appToken,
+          }),
+        },
+        requestId: randomString(),
+      }
+    }
+
+    return response()
+  }
+
+
 }
