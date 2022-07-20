@@ -44,8 +44,8 @@ export default class MuriloFariaPaymentProviderFramework extends PaymentProvider
     req: AuthorizationRequest,
     resp: AuthorizationResponse
   ) {
-    console.log(req)
-    console.log(resp)
+    //console.log(req)
+    //console.log(resp)
     await persistAuthorizationResponse(this.context.clients.vbase, resp)
     this.callback(req, resp)
   }
@@ -53,7 +53,7 @@ export default class MuriloFariaPaymentProviderFramework extends PaymentProvider
   public async authorize(
     authorization: AuthorizationRequest
   ): Promise<AuthorizationResponse> {
-    console.log(authorization)
+    //console.log(authorization)
     //if (this.isTestSuite) {
       const persistedResponse = await getPersistedAuthorizationResponse(
         this.context.clients.vbase,

@@ -1,7 +1,7 @@
 import {
   isBankInvoiceAuthorization,
-  isCardAuthorization,
-  isTokenizedCard,
+  //isCardAuthorization,
+  //isTokenizedCard,
   AuthorizationRequest,
   AuthorizationResponse,
   Authorizations,
@@ -84,24 +84,20 @@ export const flows: Record<
   PaymentApp: (request) => {
     const {paymentId} = request;
     console.log("PaymentApp") 
-    return{
-      paymentId,
+    return {
       status: 'undefined',
-      acquirer: null,
-      code: null,
-      message: null,
+      authorizationId: randomString(),
       paymentAppData: {
-          appName: 'murilofaria.payment-auth-app-mnf',
-          payload: "teste"//JSON.stringify({ paymentId })
-      },
-      identificationNumber: undefined,
-      identificationNumberFormatted: undefined,
-      barCodeImageNumber: undefined,
-      barCodeImageType: undefined,
-      delayToCancel: 1000,
+        appName: 'murilofaria.payment-auth-app-mnf',
+        payload: JSON.stringify({ paymentId })
+    },
       tid: randomString(),
-      //paymentUrl: randomUrl(),
-      authorizationId: randomString()
+      acquirer: null,
+      delayToCancel: 1000,
+      delayToAutoSettle: 1000,
+      paymentId,
+      code: "200",
+      message: "Complete trought PaymentApp Flow",
     }
   },
   
@@ -131,30 +127,43 @@ export type CardNumber =
   | '4222222222222225'
   | 'null'
 
-const cardResponses: Record<CardNumber, Flow> = {
+/*const cardResponses: Record<CardNumber, Flow> = {
   '4444333322221111': 'Authorize',
   '4444333322221112': 'Redirect',
   '4444333322221113': 'PaymentApp',
   '4222222222222224': 'AsyncApproved',
   '4222222222222225': 'AsyncDenied',
   null: 'Denied',
-}
+}*/
 
-const findFlow = (request: AuthorizationRequest): Flow => {
-  if (isBankInvoiceAuthorization(request)) return 'BankInvoice'
-
-  if (isCardAuthorization(request)) {
-    const { card } = request
-    const cardNumber = isTokenizedCard(card) ? '4222222222222224' : card.number
-    console.log("Card Specs")
-    console.log(card)
-    console.log(cardNumber)
-
-    return cardResponses[cardNumber as CardNumber]
+const findFlow = (request: any): Flow => {
+  console.log('Entrei no flow')
+  console.log(request.paymentMethod)
+  if (isBankInvoiceAuthorization(request)) {
+    console.log('Entrei no BankInvoice')
+    return 'BankInvoice'
   }
 
-  return 'Authorize'
+/*
+  if (isCardAuthorization(request)) {
+    const { card } = request
+    const cardNumber = isTokenizedCard(card) ? '4444333322221113' : card.number
+    console.log('Entrei no CC')
+    return cardResponses[cardNumber as CardNumber]
+  }
+*/
+  if(request.paymentMethod = 'Murilo Payment'){
+    console.log('Entrei no PaymentApp')
+    return 'PaymentApp'
+  }
+    
+
+  
+  console.log('Entrei no Denied')
+  return 'Denied'
+  
 }
+
 
 export const executeAuthorization = (
   request: AuthorizationRequest,

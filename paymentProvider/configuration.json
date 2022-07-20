@@ -1,47 +1,61 @@
-{
-  "name": "MuriloFariaPaymentProviderFramework",
-  "usesSecureProxy": false,
-  "usesBankInvoiceEnglishName": true,
-  "paymentMethods": [
-    {
-      "name": "Visa",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "American Express",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "Diners",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "Elo",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "Hipercard",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "Mastercard",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "BankInvoice",
-      "allowsSplit": "onAuthorize"
-    },
-    {
-      "name": "Pix",
-      "allowsSplit": "onAuthorize"
-    },
-    {
-      "name": "Privatelabels",
-      "allowsSplit": "onCapture"
-    },
-    {
-      "name": "Cobranded",
-      "allowsSplit": "onCapture"
-    }
-  ]
-}
+  {
+    "name": "MuriloFariaPaymentProviderFramework",
+    "usesSecureProxy": false,
+    "usesBankInvoiceEnglishName": true,
+    "customFields":[
+      {
+        "name": "External ID",
+        "type": "text"
+      }
+    ],
+    "paymentMethods": [
+      {
+        "name": "Visa",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "American Express",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Diners",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Elo",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Hipercard",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Mastercard",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "BankInvoice",
+        "allowsSplit": "onAuthorize"
+      },
+      {
+        "name": "Pix",
+        "allowsSplit": "onAuthorize"
+      },
+      {
+        "name": "Privatelabels",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Cobranded",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Promissories",
+        "allowsSplit": "onCapture"
+      },
+      {
+        "name": "Murilo Payment Method",
+        "allowsSplit": "onCapture"
+      }
+    ]
+  }
